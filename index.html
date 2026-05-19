@@ -157,6 +157,22 @@ body {
   background: var(--amber);
   color: #fff;
 }
+.day-num-badge {
+  display: none;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--amber);
+  color: #fff;
+  padding: 4px 10px;
+  border-radius: 20px;
+  min-width: 28px;
+  text-align: center;
+  line-height: 1.2;
+}
+.day-num-badge.show {
+  display: inline-block;
+}
 
 /* ── SECTION ── */
 .section {
@@ -430,10 +446,10 @@ body {
   height: 44px;
   border: 1px solid var(--border2);
   border-radius: var(--r-sm);
-  background: var(--surface2);
+  background: var(--surface);
   font-family: var(--font-mono);
   font-size: 12px;
-  color: var(--ink3);
+  color: var(--ink2);
   cursor: pointer;
   transition: all 0.15s;
   display: flex;
@@ -442,10 +458,19 @@ body {
   justify-content: center;
   gap: 1px;
 }
-.inj-day-btn .dn { font-size: 10px; }
-.inj-day-btn:hover { border-color: var(--amber); background: var(--amber-l); color: var(--amber); }
+.inj-day-btn > span:first-child {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1;
+}
+.inj-day-btn .dn { font-size: 10px; color: var(--ink3); }
+.inj-day-btn:hover { border-color: var(--amber); background: var(--amber-l); }
+.inj-day-btn:hover > span:first-child { color: var(--amber); }
+.inj-day-btn:hover .dn { color: var(--amber); }
 .inj-day-btn.sel { background: var(--amber); border-color: var(--amber); color: #fff; }
-.inj-day-btn.sel .dn { color: rgba(255,255,255,0.7); }
+.inj-day-btn.sel > span:first-child { color: #fff; }
+.inj-day-btn.sel .dn { color: rgba(255,255,255,0.85); }
 
 /* ── FEEDBACK BLOCK ── */
 .feedback-block {
@@ -490,35 +515,34 @@ body {
 .submit-row {
   display: flex;
   gap: 10px;
-  margin-top: 4px;
+  margin-top: 12px;
+  align-items: stretch;
+}
+.btn-primary,
+.btn-reset {
+  flex: 1;
+  height: 44px;
+  border-radius: var(--r);
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.15s;
 }
 .btn-primary {
-  flex: 1;
-  height: 48px;
   background: var(--teal);
   color: #fff;
   border: none;
-  border-radius: var(--r);
   font-family: var(--font-display);
-  font-size: 15px;
   font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
   letter-spacing: -0.2px;
 }
-.btn-primary:hover { background: var(--teal-m); }
-.btn-primary:active { transform: scale(0.98); }
+.btn-primary:hover:not(:disabled) { background: var(--teal-m); }
+.btn-primary:active:not(:disabled) { transform: scale(0.98); }
 .btn-reset {
-  height: 48px;
-  padding: 0 20px;
   background: transparent;
   color: var(--ink3);
   border: 1px solid var(--border2);
-  border-radius: var(--r);
   font-family: var(--font-body);
-  font-size: 13px;
-  cursor: pointer;
-  transition: all 0.15s;
+  padding: 0 16px;
 }
 .btn-reset:hover { color: var(--red); border-color: var(--red); }
 
@@ -549,11 +573,11 @@ body {
   border-radius: 4px;
 }
 .submit-status {
-  flex: 1;
+  margin-top: 10px;
   font-size: 13px;
   color: var(--ink3);
-  align-self: center;
   min-height: 1.4em;
+  text-align: center;
 }
 .submit-status.ok { color: var(--teal-m); font-weight: 500; }
 .submit-status.err { color: var(--red); font-weight: 500; }
@@ -583,12 +607,7 @@ body {
   .section-subtitle { display: none; }
   .section-header { padding: 12px 14px; gap: 8px; }
   .section-body { padding: 14px; }
-  .submit-row {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  .submit-status { text-align: center; }
-  .btn-reset { width: 100%; }
+  .submit-row { gap: 8px; }
   .protein-track { grid-template-columns: 1fr; }
   .inj-day-grid { flex-wrap: wrap; }
   .inj-day-btn {
@@ -635,6 +654,7 @@ body {
     <div class="date-bar-badges">
       <span class="inj-badge" id="inj-badge">день укола</span>
       <button type="button" class="day-n-badge" id="day-after-btn" onclick="toggleDayAfter()">после укола</button>
+      <span class="day-num-badge" id="inj-day-pill" aria-hidden="true"></span>
     </div>
   </div>
 
@@ -987,11 +1007,11 @@ body {
   </div>
 
   <!-- SUBMIT -->
-  <div class="submit-row" style="margin-top:16px">
-    <button type="button" class="btn-primary" id="submitBtn" onclick="submit()">Сохранить день →</button>
+  <div class="submit-row">
+    <button type="button" class="btn-primary" id="submitBtn" onclick="submit()">Сохранить</button>
     <button type="button" class="btn-reset" onclick="resetForm()">Сброс</button>
-    <span class="submit-status" id="submitStatus" role="status" aria-live="polite"></span>
   </div>
+  <p class="submit-status" id="submitStatus" role="status" aria-live="polite"></p>
 
   <!-- FEEDBACK -->
   <div class="feedback-block" id="feedback">
@@ -1133,16 +1153,51 @@ function toggleMeal(el) {
   el.classList.toggle('done');
 }
 
+function updateAfterBtnLabel() {
+  const btn = document.getElementById('day-after-btn');
+  btn.textContent = btn.classList.contains('active') ? '✓ после укола' : 'после укола';
+}
+
+function updateInjDayPill() {
+  const pill = document.getElementById('inj-day-pill');
+  const sel = document.querySelector('#inj-day .inj-day-btn.sel');
+  const afterBtn = document.getElementById('day-after-btn');
+
+  if (!sel) {
+    pill.textContent = '';
+    pill.classList.remove('show');
+    pill.setAttribute('aria-hidden', 'true');
+    return;
+  }
+
+  if (!afterBtn.classList.contains('active')) {
+    afterBtn.classList.add('active');
+    updateAfterBtnLabel();
+  }
+
+  const dayVal = sel.querySelector('span:first-child').textContent.trim();
+  pill.textContent = dayVal;
+  pill.classList.add('show');
+  pill.setAttribute('aria-hidden', 'false');
+}
+
 function pickInjDay(btn) {
   const parent = btn.closest('.inj-day-grid');
   parent.querySelectorAll('.inj-day-btn').forEach(b => b.classList.remove('sel'));
   btn.classList.add('sel');
+  updateInjDayPill();
 }
 
 function toggleDayAfter() {
   const btn = document.getElementById('day-after-btn');
   btn.classList.toggle('active');
-  btn.textContent = btn.classList.contains('active') ? '✓ после укола' : 'после укола';
+  if (!btn.classList.contains('active')) {
+    document.querySelectorAll('.inj-day-btn').forEach(b => b.classList.remove('sel'));
+    document.getElementById('inj-day-pill').textContent = '';
+    document.getElementById('inj-day-pill').classList.remove('show');
+    document.getElementById('inj-day-pill').setAttribute('aria-hidden', 'true');
+  }
+  updateAfterBtnLabel();
 }
 
 async function submit() {
@@ -1271,10 +1326,13 @@ function resetForm() {
   document.querySelectorAll('textarea').forEach(t => t.value = '');
   document.getElementById('protein-total').value = '';
   document.getElementById('feedback').classList.remove('show');
+  document.getElementById('day-after-btn').classList.remove('active');
+  updateAfterBtnLabel();
+  document.getElementById('inj-day-pill').textContent = '';
+  document.getElementById('inj-day-pill').classList.remove('show');
+  document.getElementById('inj-day-pill').setAttribute('aria-hidden', 'true');
   document.getElementById('submitStatus').textContent = '';
   document.getElementById('submitStatus').className = 'submit-status';
-  document.getElementById('day-after-btn').classList.remove('active');
-  document.getElementById('day-after-btn').textContent = 'после укола';
   document.getElementById('workout-detail').style.display = 'none';
   document.getElementById('workout-feel').style.display = 'none';
   for (const k in state) delete state[k];
