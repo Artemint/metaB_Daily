@@ -4,6 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>metaB · Ежедневный дневник</title>
+<meta name="description" content="Ежедневная анкета metaB: самочувствие, питание, активность, Mounjaro.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="metaB · Ежедневный дневник">
+<meta property="og:description" content="Заполните дневник за сегодня — самочувствие, питание, активность.">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="metaB · Ежедневный дневник">
+<meta name="twitter:description" content="Заполните дневник за сегодня — самочувствие, питание, активность.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Syne:wght@400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
 <style>
@@ -1200,6 +1207,243 @@ function toggleDayAfter() {
   updateAfterBtnLabel();
 }
 
+function countProteinMeals() {
+  return document.querySelectorAll(".meal-check.done").length;
+}
+
+function buildInsights() {
+  const items = [];
+  const nausea = state.nausea !== undefined ? parseInt(state.nausea, 10) : null;
+  const water = state.water || "";
+  const vol = state["vol-eaten"] || "";
+  const proteinRaw = document.getElementById("protein-total").value.trim();
+  const protein = proteinRaw === "" ? null : parseInt(proteinRaw, 10);
+  const energy = state.energy !== undefined ? parseInt(state.energy, 10) : null;
+  const steps = state.steps || "";
+  const appetite = state.appetite || "";
+  const dayCard = state["day-card"] || "";
+  const dose = state.dose || "";
+  const gutComfort = state["gut-comfort"] || "";
+  const heartburn = state.heartburn;
+  const hadWorkout = state.workout;
+  const workoutQuality = state["workout-quality"] || "";
+  const stool = state.stool || "";
+  const proteinMeals = countProteinMeals();
+  const injDay = getInjDayLabel();
+
+  if (nausea !== null) {
+    if (nausea >= 4) {
+      items.push({
+        t: "bad",
+        text: "Тошнота " + nausea + "/5 — переключись на карточку V. Приоритет: V1 → L1 → S2 → D1.",
+      });
+    } else if (nausea >= 2) {
+      items.push({
+        t: "warn",
+        text: "Тошнота умеренная (" + nausea + "/5) — держи порции небольшими, жир минимально до вечера.",
+      });
+    } else {
+      items.push({
+        t: "ok",
+        text: "Тошнота под контролем — можно работать по плановой карточке дня.",
+      });
+    }
+  }
+
+  if (water) {
+    if (water === "< 1 л") {
+      items.push({
+        t: "bad",
+        text: "Мало воды — МК 389, гидратация критична. Цель: 2+ л завтра.",
+      });
+    } else if (water === "1 – 1.5 л") {
+      items.push({
+        t: "warn",
+        text: "Вода 1–1.5 л — немного ниже нормы. Добавь стакан к каждому приёму.",
+      });
+    } else {
+      items.push({
+        t: "ok",
+        text: "Гидратация в норме — хорошо для МК и общего самочувствия.",
+      });
+    }
+  }
+
+  if (protein !== null) {
+    if (protein < 80) {
+      items.push({
+        t: "warn",
+        text: "Белок " + protein + "г — ниже минимума 80г. Добавь изолят или белковый перекус.",
+      });
+    } else if (protein <= 135) {
+      items.push({
+        t: "ok",
+        text: "Белок " + protein + "г — в целевом диапазоне.",
+      });
+    } else {
+      items.push({
+        t: "warn",
+        text: "Белок " + protein + "г — выше верхней границы. Проверь порции мяса.",
+      });
+    }
+  } else if (nausea !== null && nausea >= 2) {
+    items.push({
+      t: "warn",
+      text: "Белок не указан — в дни тошноты важно отслеживать минимум 80г.",
+    });
+  }
+
+  if (proteinMeals > 0 && proteinMeals < 3) {
+    items.push({
+      t: "warn",
+      text: "Белок только в " + proteinMeals + " приёмах — цель: белковый источник в каждом основном приёме.",
+    });
+  } else if (proteinMeals >= 3) {
+    items.push({
+      t: "ok",
+      text: "Белок распределён по " + proteinMeals + " приёмам — хорошая стратегия при Mounjaro.",
+    });
+  }
+
+  if (vol === "Нет, очень мало") {
+    items.push({
+      t: "bad",
+      text: "Объём еды очень мал. Если 2+ дня подряд — сообщи куратору.",
+    });
+  } else if (vol === "Частично") {
+    items.push({
+      t: "warn",
+      text: "Частичное питание — это нормально в дни пика. Главное — белок и вода.",
+    });
+  } else if (vol === "Да, полностью") {
+    items.push({
+      t: "ok",
+      text: "Запланированный объём съеден — хороший знак для восстановления.",
+    });
+  }
+
+  if (energy !== null && energy <= 2) {
+    items.push({
+      t: "warn",
+      text: "Энергия " + energy + "/5 — снизь нагрузку, приоритет NEAT и отдых.",
+    });
+  } else if (energy !== null && energy >= 4) {
+    items.push({
+      t: "ok",
+      text: "Энергия " + energy + "/5 — можно планировать активность по карточке дня.",
+    });
+  }
+
+  if (steps === "10к+" || steps === "8–10к") {
+    items.push({
+      t: "ok",
+      text: "Отличный NEAT — это вклад в висцеральный жир без нагрузки на ЖКТ.",
+    });
+  } else if (steps === "< 4к") {
+    items.push({
+      t: "warn",
+      text: "Шаги низкие — даже 10-минутная прогулка после еды улучшает чувствительность к инсулину.",
+    });
+  }
+
+  if (appetite === "Нет совсем") {
+    items.push({
+      t: "bad",
+      text: "Аппетит 0 — используй карточку V, пробуй жидкое и мягкое маленькими порциями.",
+    });
+  } else if (appetite === "Очень низкий") {
+    items.push({
+      t: "warn",
+      text: "Аппетит очень низкий — не пропускай белок и воду, даже если не хочется есть.",
+    });
+  }
+
+  if (nausea !== null && nausea >= 3 && dayCard && !dayCard.startsWith("V")) {
+    items.push({
+      t: "warn",
+      text: "Тошнота " + nausea + "/5, а карточка не V — пересмотри план дня.",
+    });
+  }
+
+  if (injDay && (injDay.startsWith("1") || injDay.startsWith("2"))) {
+    items.push({
+      t: "warn",
+      text: "День " + injDay + " после укола — типичный пик. Меньше жира, чаще и поменьше.",
+    });
+  }
+
+  if (heartburn === "yes") {
+    items.push({
+      t: "warn",
+      text: "Изжога — избегай больших порций и позднего ужина, следи за белком в первой половине дня.",
+    });
+  }
+
+  if (gutComfort && gutComfort !== "Нет") {
+    items.push({
+      t: "warn",
+      text: "ЖКТ: " + gutComfort + " — отметь триггер в блоке «что плохо переносилось».",
+    });
+  }
+
+  if (hadWorkout === "yes" && workoutQuality === "Плохо") {
+    items.push({
+      t: "warn",
+      text: "Тренировка прошла тяжело — завтра снизь объём или перейди на NEAT.",
+    });
+  } else if (hadWorkout === "yes" && workoutQuality === "Отлично") {
+    items.push({
+      t: "ok",
+      text: "Тренировка прошла хорошо — сохраняй текущий режим восстановления.",
+    });
+  }
+
+  if (stool === "Запор" || stool === "Диарея") {
+    items.push({
+      t: "warn",
+      text: "Стул: " + stool + " — проверь воду, клетчатку и жир; при повторении сообщи куратору.",
+    });
+  }
+
+  if (dose && dose !== "— без укола" && nausea !== null && nausea >= 3) {
+    items.push({
+      t: "warn",
+      text: "День укола (" + dose + ") + тошнота — это ожидаемо, держись карточки V.",
+    });
+  }
+
+  if (!items.length) {
+    items.push({
+      t: "ok",
+      text: "Заполните ключевые поля (тошнота, вода, аппетит, шаги) — появятся персональные подсказки.",
+    });
+  }
+
+  return items;
+}
+
+function renderInsights(items) {
+  const fb = document.getElementById("feedback");
+  const fbItems = document.getElementById("fb-items");
+  fb.classList.add("show");
+  fbItems.innerHTML = items
+    .map(function (i) {
+      return (
+        '<div class="fb-item ' +
+        i.t +
+        '">' +
+        '<span class="fb-icon">' +
+        (i.t === "ok" ? "✓" : i.t === "warn" ? "⚠" : "✕") +
+        "</span>" +
+        '<span class="fb-text">' +
+        i.text +
+        "</span></div>"
+      );
+    })
+    .join("");
+  fb.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
 async function submit() {
   const statusEl = document.getElementById("submitStatus");
   const submitBtn = document.getElementById("submitBtn");
@@ -1214,72 +1458,13 @@ async function submit() {
     return;
   }
 
+  renderInsights(buildInsights());
+
   if (!WEB_APP_URL) {
-    statusEl.textContent = "Не задан WEB_APP_URL в коде страницы.";
+    statusEl.textContent = "Разбор готов. WEB_APP_URL не задан — в таблицу не отправлено.";
     statusEl.classList.add("err");
     return;
   }
-
-  const nausea = parseInt(state['nausea'] || 0);
-  const water = state['water'] || '';
-  const vol = state['vol-eaten'] || '';
-  const protein = parseInt(document.getElementById('protein-total').value || 0);
-  const energy = parseInt(state['energy'] || 3);
-  const steps = state['steps'] || '';
-  const appetite = state['appetite'] || '';
-
-  const items = [];
-
-  if (nausea >= 4) {
-    items.push({t:'bad', text:'Тошнота ' + nausea + '/5 — переключись на карточку V. Приоритет: V1 → L1 → S2 → D1.'});
-  } else if (nausea >= 2) {
-    items.push({t:'warn', text:'Тошнота умеренная (' + nausea + '/5) — держи порции небольшими, жир минимально до вечера.'});
-  } else {
-    items.push({t:'ok', text:'Тошнота под контролем — можно работать по плановой карточке дня.'});
-  }
-
-  if (water === '< 1 л' || water === '') {
-    items.push({t:'bad', text:'Мало воды — МК 389, гидратация критична. Цель: 2+ л завтра.'});
-  } else if (water === '1 – 1.5 л') {
-    items.push({t:'warn', text:'Вода 1–1.5 л — немного ниже нормы. Добавь стакан к каждому приёму.'});
-  } else {
-    items.push({t:'ok', text:'Гидратация в норме — хорошо для МК и общего самочувствия.'});
-  }
-
-  if (protein > 0 && protein < 80) {
-    items.push({t:'warn', text:'Белок ' + protein + 'г — ниже минимума 80г для дня тошноты. Завтра добавь изолят в перекус.'});
-  } else if (protein >= 80 && protein <= 135) {
-    items.push({t:'ok', text:'Белок ' + protein + 'г — в целевом диапазоне.'});
-  } else if (protein > 135) {
-    items.push({t:'warn', text:'Белок ' + protein + 'г — выше верхней границы. Проверь порции мяса.'});
-  }
-
-  if (vol === 'Нет, очень мало') {
-    items.push({t:'bad', text:'Объём еды очень мал. Если 2+ дня подряд — сообщи врачу.'});
-  } else if (vol === 'Частично') {
-    items.push({t:'warn', text:'Частичное питание — это нормально в дни пика. Главное — белок и вода.'});
-  }
-
-  if (steps === '10к+' || steps === '8–10к') {
-    items.push({t:'ok', text:'Отличный NEAT — это вклад в висцеральный жир без нагрузки на ЖКТ.'});
-  } else if (steps === '< 4к') {
-    items.push({t:'warn', text:'Шаги низкие — даже 10-минутная прогулка после еды улучшает чувствительность к инсулину.'});
-  }
-
-  if (appetite === 'Нет совсем') {
-    items.push({t:'bad', text:'Аппетит 0 — используй карточку V, пробуй жидкое и мягкое маленькими порциями.'});
-  }
-
-  const fb = document.getElementById('feedback');
-  const fbItems = document.getElementById('fb-items');
-  fb.classList.add('show');
-  fbItems.innerHTML = items.map(i =>
-    '<div class="fb-item ' + i.t + '">' +
-    '<span class="fb-icon">' + (i.t==='ok'?'✓':i.t==='warn'?'⚠':'✕') + '</span>' +
-    '<span class="fb-text">' + i.text + '</span></div>'
-  ).join('');
-
-  fb.scrollIntoView({behavior:'smooth', block:'start'});
 
   submitBtn.disabled = true;
   statusEl.textContent = "Отправка…";
@@ -1294,7 +1479,11 @@ async function submit() {
 
     const text = await res.text();
     let data;
-    try { data = JSON.parse(text); } catch { data = null; }
+    try {
+      data = JSON.parse(text);
+    } catch {
+      data = null;
+    }
 
     if (!res.ok) {
       throw new Error(data && data.message ? data.message : "Код ответа: " + res.status);
@@ -1307,8 +1496,7 @@ async function submit() {
     statusEl.classList.add("ok");
   } catch (err) {
     statusEl.textContent =
-      "Не удалось отправить в таблицу. " +
-      (err && err.message ? err.message : err);
+      "Разбор показан, но в таблицу не отправлено. " + (err && err.message ? err.message : err);
     statusEl.classList.add("err");
   } finally {
     submitBtn.disabled = false;
