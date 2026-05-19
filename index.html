@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>metaB · Дневник Кэти</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Syne:wght@400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F0F2F0;
+  --surface: #FFFFFF;
+  --surface2: #F7F8F7;
+  --border: #E2E6E2;
+  --border2: #C8CEC8;
+  --ink: #0E1A0E;
+  --ink2: #3A4A3A;
+  --ink3: #7A8A7A;
+  --teal: #0A6E6E;
+  --teal-l: #D8EDED;
+  --teal-m: #1D9E75;
+  --lime: #6BBF3A;
+  --lime-l: #EBF7E0;
+  --amber: #C87D0E;
+  --amber-l: #FDF0DC;
+  --red: #C13030;
+  --red-l: #FAEAEA;
+  --blue: #1A5FAA;
+  --blue-l: #E6F1FB;
+  --font-display: 'Syne', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+  --r: 12px;
+  --r-sm: 6px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--ink);
+  min-height: 100vh;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.wrap {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 0 16px 60px;
+}
+
+/* ── HEADER ── */
+.header {
+  padding: 28px 0 20px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 24px;
+}
+.logo {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: var(--ink);
+}
+.logo span { color: var(--teal-m); }
+.header-meta {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink3);
+  text-align: right;
+  line-height: 1.6;
+}
+
+/* ── DATE BAR ── */
+.date-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 12px 16px;
+}
+.date-bar input[type="date"] {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  border: none;
+  background: transparent;
+  color: var(--ink);
+  outline: none;
+  cursor: pointer;
+  flex: 1;
+}
+.inj-badge {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  background: var(--teal-l);
+  color: var(--teal);
+  padding: 4px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+.day-n-badge {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  background: var(--amber-l);
+  color: var(--amber);
+  padding: 4px 10px;
+  border-radius: 20px;
+  cursor: pointer;
+  border: none;
+}
+.day-n-badge.active {
+  background: var(--amber);
+  color: #fff;
+}
+
+/* ── SECTION ── */
+.section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  user-select: none;
+}
+.section-header:hover { background: var(--surface2); }
+.section-num {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--teal-m);
+  background: var(--teal-l);
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.section-title {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  flex: 1;
+}
+.section-subtitle {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink3);
+}
+.chevron {
+  font-size: 12px;
+  color: var(--ink3);
+  transition: transform 0.2s;
+}
+.section.open .chevron { transform: rotate(180deg); }
+.section-body {
+  display: none;
+  padding: 16px;
+  flex-direction: column;
+  gap: 14px;
+}
+.section.open .section-body { display: flex; }
+
+/* ── FIELD ── */
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field-label {
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink2);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.field-label .dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--teal-m);
+  flex-shrink: 0;
+}
+.field-hint {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--ink3);
+  margin-top: -2px;
+}
+
+/* ── SCALE ── */
+.scale {
+  display: flex;
+  gap: 6px;
+}
+.scale-btn {
+  flex: 1;
+  height: 36px;
+  border: 1px solid var(--border2);
+  border-radius: var(--r-sm);
+  background: var(--surface2);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink3);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.scale-btn:hover { border-color: var(--teal); color: var(--teal); background: var(--teal-l); }
+.scale-btn.sel { border-color: var(--teal); background: var(--teal); color: #fff; }
+.scale-btn.sel-1 { background: var(--lime); border-color: var(--lime); color: #fff; }
+.scale-btn.sel-2 { background: #A0C840; border-color: #A0C840; color: #fff; }
+.scale-btn.sel-3 { background: var(--amber); border-color: var(--amber); color: #fff; }
+.scale-btn.sel-4 { background: #D06020; border-color: #D06020; color: #fff; }
+.scale-btn.sel-5 { background: var(--red); border-color: var(--red); color: #fff; }
+
+/* ── TOGGLE ── */
+.toggle-row { display: flex; gap: 6px; flex-wrap: wrap; }
+.toggle-btn {
+  height: 34px;
+  padding: 0 14px;
+  border: 1px solid var(--border2);
+  border-radius: var(--r-sm);
+  background: var(--surface2);
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--ink2);
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.toggle-btn:hover { border-color: var(--teal); color: var(--teal); background: var(--teal-l); }
+.toggle-btn.sel { border-color: var(--teal); background: var(--teal); color: #fff; }
+.toggle-btn.sel-warn { border-color: var(--amber); background: var(--amber-l); color: var(--amber); }
+.toggle-btn.sel-bad { border-color: var(--red); background: var(--red-l); color: var(--red); }
+
+/* ── CHECKBOX PAIR ── */
+.yn-row { display: flex; gap: 6px; }
+.yn-btn {
+  flex: 1;
+  height: 36px;
+  border: 1px solid var(--border2);
+  border-radius: var(--r-sm);
+  background: var(--surface2);
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--ink2);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.yn-btn:hover { border-color: var(--teal); }
+.yn-btn.sel-yes { background: var(--lime-l); border-color: var(--lime); color: #2A6010; }
+.yn-btn.sel-no { background: var(--red-l); border-color: var(--red); color: var(--red); }
+
+/* ── CHECKBOX LIST ── */
+.check-list { display: flex; flex-direction: column; gap: 6px; }
+.check-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  transition: all 0.15s;
+  background: var(--surface2);
+}
+.check-item:hover { border-color: var(--teal); background: var(--teal-l); }
+.check-item.sel { border-color: var(--teal); background: var(--teal-l); }
+.check-box {
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid var(--border2);
+  border-radius: 4px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
+.check-item.sel .check-box { background: var(--teal); border-color: var(--teal); }
+.check-mark { display: none; color: #fff; font-size: 11px; font-weight: 700; }
+.check-item.sel .check-mark { display: block; }
+.check-text { font-size: 13px; color: var(--ink2); }
+.check-item.sel .check-text { color: var(--teal); }
+
+/* ── TEXTAREA ── */
+.diary-textarea {
+  width: 100%;
+  min-height: 72px;
+  border: 1px solid var(--border2);
+  border-radius: var(--r-sm);
+  background: var(--surface2);
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--ink);
+  padding: 10px 12px;
+  resize: vertical;
+  outline: none;
+  line-height: 1.6;
+}
+.diary-textarea:focus { border-color: var(--teal); background: var(--surface); }
+.diary-textarea::placeholder { color: var(--ink3); }
+
+/* ── NUMBER INPUT ── */
+.num-row { display: flex; gap: 6px; align-items: center; }
+.num-input {
+  width: 72px;
+  height: 36px;
+  border: 1px solid var(--border2);
+  border-radius: var(--r-sm);
+  background: var(--surface2);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--ink);
+  text-align: center;
+  outline: none;
+}
+.num-input:focus { border-color: var(--teal); }
+.num-unit { font-family: var(--font-mono); font-size: 12px; color: var(--ink3); }
+
+/* ── ROW DIVIDER ── */
+.row-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 2px 0;
+}
+
+/* ── PROTEIN TRACKER ── */
+.protein-track {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.meal-slot {
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 10px 12px;
+  background: var(--surface2);
+}
+.meal-slot-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--ink3);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.meal-check-row { display: flex; align-items: center; gap: 8px; }
+.meal-check {
+  width: 20px;
+  height: 20px;
+  border: 1.5px solid var(--border2);
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+.meal-check.done { background: var(--teal-m); border-color: var(--teal-m); }
+.meal-check .mc { display: none; color: #fff; font-size: 11px; font-weight: 700; }
+.meal-check.done .mc { display: block; }
+.meal-check-label { font-size: 12px; color: var(--ink2); }
+
+/* ── MOUNJARO SECTION ── */
+.inj-day-grid {
+  display: flex;
+  gap: 6px;
+}
+.inj-day-btn {
+  flex: 1;
+  height: 44px;
+  border: 1px solid var(--border2);
+  border-radius: var(--r-sm);
+  background: var(--surface2);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--ink3);
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+}
+.inj-day-btn .dn { font-size: 10px; }
+.inj-day-btn:hover { border-color: var(--amber); background: var(--amber-l); color: var(--amber); }
+.inj-day-btn.sel { background: var(--amber); border-color: var(--amber); color: #fff; }
+.inj-day-btn.sel .dn { color: rgba(255,255,255,0.7); }
+
+/* ── FEEDBACK BLOCK ── */
+.feedback-block {
+  display: none;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  overflow: hidden;
+  margin-top: 12px;
+}
+.feedback-block.show { display: block; }
+.fb-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  background: var(--teal);
+  color: #fff;
+}
+.fb-header-title {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+}
+.fb-body { padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+.fb-item {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 10px 12px;
+  border-radius: var(--r-sm);
+  font-size: 13px;
+  line-height: 1.5;
+}
+.fb-item.ok { background: var(--lime-l); color: #2A6010; }
+.fb-item.warn { background: var(--amber-l); color: #7A4A06; }
+.fb-item.bad { background: var(--red-l); color: #7A1010; }
+.fb-icon { flex-shrink: 0; margin-top: 1px; font-size: 14px; }
+.fb-text { flex: 1; }
+
+/* ── SUBMIT ── */
+.submit-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+.btn-primary {
+  flex: 1;
+  height: 48px;
+  background: var(--teal);
+  color: #fff;
+  border: none;
+  border-radius: var(--r);
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: -0.2px;
+}
+.btn-primary:hover { background: var(--teal-m); }
+.btn-primary:active { transform: scale(0.98); }
+.btn-reset {
+  height: 48px;
+  padding: 0 20px;
+  background: transparent;
+  color: var(--ink3);
+  border: 1px solid var(--border2);
+  border-radius: var(--r);
+  font-family: var(--font-body);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-reset:hover { color: var(--red); border-color: var(--red); }
+
+/* ── FOOTER ── */
+.page-footer {
+  text-align: center;
+  padding: 20px 0 10px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink3);
+  line-height: 2;
+}
+.config-warn {
+  background: var(--red-l);
+  border: 1px solid rgba(193, 48, 48, 0.25);
+  color: var(--ink2);
+  padding: 12px 14px;
+  border-radius: var(--r-sm);
+  font-size: 12px;
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+.config-warn code {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  background: var(--teal-l);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.submit-status {
+  flex: 1;
+  font-size: 13px;
+  color: var(--ink3);
+  align-self: center;
+  min-height: 1.4em;
+}
+.submit-status.ok { color: var(--teal-m); font-weight: 500; }
+.submit-status.err { color: var(--red); font-weight: 500; }
+.btn-primary:disabled { opacity: 0.55; cursor: not-allowed; }
+.name-input {
+  flex: 1;
+  min-width: 120px;
+  border: none;
+  background: transparent;
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--ink);
+  outline: none;
+}
+.name-input::placeholder { color: var(--ink3); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="logo">meta<span>B</span></div>
+    <div class="header-meta">
+      Дневник · Кэти<br>
+      Mounjaro (тирзепатид)
+    </div>
+  </div>
+
+  <div id="configWarn" class="config-warn" hidden>
+    Укажите URL веб-приложения Google Apps Script в константе <code>WEB_APP_URL</code> внизу файла.
+  </div>
+
+  <!-- DATE BAR -->
+  <div class="date-bar">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="1.5" aria-hidden="true">
+      <rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>
+    </svg>
+    <input type="text" id="participant_name" class="name-input" placeholder="Имя / псевдоним *" required autocomplete="name" />
+    <input type="date" id="diary-date">
+    <span class="inj-badge" id="inj-badge">день укола</span>
+    <button class="day-n-badge" id="day-after-btn" onclick="toggleDayAfter()">день N после</button>
+  </div>
+
+  <!-- ──────────────────────────────────────────────────── -->
+  <!-- 1. САМОЧУВСТВИЕ -->
+  <!-- ──────────────────────────────────────────────────── -->
+  <div class="section open" id="s1">
+    <div class="section-header" onclick="toggle('s1')">
+      <div class="section-num">1</div>
+      <div class="section-title">Самочувствие</div>
+      <div class="section-subtitle">энергия · тошнота · изжога</div>
+      <div class="chevron">▼</div>
+    </div>
+    <div class="section-body">
+
+      <div class="field">
+        <div class="field-label"><span class="dot"></span>Энергия с утра</div>
+        <div class="scale" id="energy">
+          <button class="scale-btn" data-v="1" onclick="pickScale('energy',this,'sel-1')">1</button>
+          <button class="scale-btn" data-v="2" onclick="pickScale('energy',this,'sel-2')">2</button>
+          <button class="scale-btn" data-v="3" onclick="pickScale('energy',this,'sel-3')">3</button>
+          <button class="scale-btn" data-v="4" onclick="pickScale('energy',this,'sel-4')">4</button>
+          <button class="scale-btn" data-v="5" onclick="pickScale('energy',this,'sel-5')">5</button>
+        </div>
+        <div class="field-hint">1 — совсем нет · 5 — отлично</div>
+      </div>
+
+      <div class="field">
+        <div class="field-label"><span class="dot"></span>Настроение</div>
+        <div class="toggle-row" id="mood">
+          <button class="toggle-btn" onclick="pickToggle('mood',this)">Ровное</button>
+          <button class="toggle-btn" onclick="pickToggle('mood',this)">Хорошее</button>
+          <button class="toggle-btn" onclick="pickToggle('mood',this)">Тревожно</button>
+          <button class="toggle-btn" onclick="pickToggle('mood',this)">Раздражение</button>
+          <button class="toggle-btn" onclick="pickToggle('mood',this)">Упадок</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="field-label"><span class="dot"></span>Тошнота (1–5)</div>
+        <div class="scale" id="nausea">
+          <button class="scale-btn" data-v="0" onclick="pickScale('nausea',this,'sel-1')">0</button>
+          <button class="scale-btn" data-v="1" onclick="pickScale('nausea',this,'sel-2')">1</button>
+          <button class="scale-btn" data-v="2" onclick="pickScale('nausea',this,'sel-3')">2</button>
+          <button class="scale-btn" data-v="3" onclick="pickScale('nausea',this,'sel-4')">3</button>
+          <button class="scale-btn" data-v="4" onclick="pickScale('nausea',this,'sel-4')">4</button>
+          <button class="scale-btn" data-v="5" onclick="pickScale('nausea',this,'sel-5')">5</button>
+        </div>
+        <div class="field-hint">0 — нет совсем · 5 — невозможно есть</div>
+      </div>
+
+      <div class="field">
+        <div class="field-label"><span class="dot"></span>Изжога</div>
+        <div class="yn-row" id="heartburn">
+          <button class="yn-btn" onclick="pickYN('heartburn',this,'yes','sel-no')">Да</button>
+          <button class="yn-btn" onclick="pickYN('heartburn',this,'no','sel-yes')">Нет</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="field-label"><span class="dot"></span>Дискомфорт после еды</div>
+        <div class="toggle-row" id="gut-comfort">
+          <button class="toggle-btn" onclick="pickToggle('gut-comfort',this)">Нет</button>
+          <button class="toggle-btn" onclick="pickToggle('gut-comfort',this)">Тяжесть</button>
+          <button class="toggle-btn" onclick="pickToggle('gut-comfort',this)">Тошнота</button>
+          <button class="toggle-btn" onclick="pickToggle('gut-comfort',this)">Изжога</button>
+          <button class="toggle-btn" onclick="pickToggle('gut-comfort',this)">Вздутие</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ──────────────────────────────────────────────────── -->
+  <!-- 2. ПИТАНИЕ -->
+  <!-- ──────────────────────────────────────────────────── -->
+  <div class="section" id="s2">
+    <div class="section-header" onclick="toggle('s2')">
+      <div class="section-num">2</div>
+      <div class="section-title">Питание</div>
+      <div class="section-subtitle">объём · вода · белок по приёмам</div>
+      <div class="chevron">▼</div>
+    </div>
+    <div class="section-body">
+
+      <div class="field">
+        <div class="field-label"><span class="dot"></span>Смогла съесть запланированный объём</div>
+        <div class="toggle-row" id="vol-eaten">
+          <button class="toggle-btn" onclick="pickToggle('vol-eaten',this)">Да, полностью</button>
+          <button class="toggle-btn" onclick="pickToggle('vol-eaten',this)">Частично</button>
+          <button class="toggle-btn" onclick="pickToggle('vol-eaten',this)">Нет, очень мало</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="field-label"><span class="dot"></span>Вода за день</div>
+        <div class="toggle-row" id="water">
+          <button class="toggle-btn" onclick="pickToggle('water',this)">&lt; 1 л</button>
+          <button class="toggle-btn" onclick="pickToggle('water',this)">1 – 1.5 л</button>
+          <button class="toggle-btn" onclick="pickToggle('water',this)">1.5 – 2 л</button>
+          <button class="toggle-btn" onclick="pickToggle('water',this)">2+ л</button>
+        </div>
+        <div class="field-hint">МК 389 — гидратация приоритет</div>
+      </div>
+
+      <div class="field">
+        <div class="field-label"><span class="dot"></span>Белок в каждый приём</div>
+        <div class="field-hint">Отметить приёмы где был белковый источник ≥20г</div>
+        <div class="protein-track">
+          <div class="meal-slot">
+            <div class="meal-slot-label">Завтрак</div>
+            <div class="meal-check-row">
+              <div class="meal-check" onclick="toggleMeal(this)"><span class="mc">✓</span></div>
+              <span class="meal-check-label">Был белок</span>
+            </div>
+          </div>
+          <div class="meal-slot">
+            <div class="meal-slot-label">Pre-workout</div>
+            <div class="meal-check-row">
+              <div class="meal-check" onclick="toggleMeal(this)"><span class="mc">✓</span></div>
+              <span class="meal-check-label">Был белок</span>
+            </div>
+          </div>
+          <div class="meal-slot">
+            <div class="meal-slot-label">Обед / Post</div>
+            <div class="meal-check-row">
+              <div class="meal-check" onclick="toggleMeal(this)"><span class="mc">✓</span></div>
+              <span class="meal-check-label">Был белок</span>
+            </div>
+          </div>
+          <div class="meal-slot">
+            <div class="meal-slot-label">Перекус</div>
+            <div class="meal-check-row">
+              <div class="meal-check" onclick="toggleMeal(this)"><span class="mc">✓</span></div>
+              <span class="meal-check-label">Был белок</span>
+            </div>
+          </div>
+          <div class="meal-slot">
+            <div class="meal-slot-label">Ужин</div>
+            <div class="meal-check-row">
+              <div class="meal-check" onclick="toggleMeal(this)"><span class="mc">✓</span></div>
+              <span class="meal-check-label">Был белок</span>
+            </div>
+          </div>
+          <div class="meal-slot">
+            <div class="meal-slot-label">Итого белка</div>
+            <div class="meal-check-row">
+              <div class="num-row">
+                <input class="num-input" type="number" placeholder="—" id="protein-total" min="0" max="300" style="width:60px;height:28px;font-size:13px;">
+                <span class="num-unit">г</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="field-label"><span class="dot"></span>Карточка дня</div>
+        <div class="toggle-row" id="day-card">
+          <button class="toggle-btn" onclick="pickToggle('day-card',this)">A — силовой</button>
+          <button class="toggle-btn" onclick="pickToggle('day-card',this)">Б — NEAT</button>
+          <button class="toggle-btn" onclick="pickToggle('day-card',this)">V — тошнота</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ──────────────────────────────────────────────────── -->
+  <!-- 3. ТРЕНИРОВКА И ШАГИ -->
+  <!-- ──────────────────────────────────────────────────── -->
+  <div class="section" id="s3">
+    <div class="section-header" onclick="toggle('s3')">
+      <div class="section-num">3</div>
+      <div class="section-title">Активность</div>
+      <div class="section-subtitle">тренировка · шаги · самочувствие</div>
+      <div class="chevron">▼</div>
+    </div>
+    <div class="section-body">
+
+      <div class="field">
+        <div class="field-label"><span class="dot"></span>Тренировка сегодня</div>
+        <div class="yn-row" id="workout">
+          <button class="yn-btn" onclick="pickYN('workout',this,'yes','sel-yes')">Была</button>
+          <button class="yn-btn" onclick="pickYN('workout',this,'no','sel-no')">Не было</button>
+        </div>
+      </div>
+
+      <div class="field" id="workout-detail" style="display:none">
+        <div class="field-label"><span class="dot"></span>Тип тренировки</div>
+        <div class="toggle-row" id="workout-type">
+          <button class="toggle-btn" onclick="pickToggle('workout-type',this)">Силовая</button>
+          <button class="toggle-btn" onclick="pickToggle('workout-type',this)">Кардио зона 2</button>
+          <button class="toggle-btn" onclick="pickToggle('workout-type',this)">Силовая + кардио</button>
+        </div>
+      </div>
+
+      <div class="field" id="workout-feel" style="display:none">
+        <div class="field-label"><span class="dot"></span>Самочувствие на тренировке</div>
+        <div class="toggle-row" id="workout-quality">
+          <button class="toggle-btn" onclick="pickToggle('workout-quality',this)">Отлично</button>
+          <button class="toggle-btn" onclick="pickToggle('workout-quality',this)">Хорошо</button>
+          <button class="toggle-btn" onclick="pickToggle('workout-quality',this)">Средне</button>
+          <button class="toggle-btn" onclick="pickToggle('workout-quality',this)">Плохо</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="field-label"><span class="dot"></span>Шаги за день</div>
+        <div class="toggle-row" id="steps">
+          <button class="toggle-btn" onclick="pickToggle('steps',this)">&lt; 4к</button>
+          <button class="toggle-btn" onclick="pickToggle('steps',this)">4–6к</button>
+          <button class="toggle-btn" onclick="pickToggle('steps',this)">6–8к</button>
+          <button class="toggle-btn" onclick="pickToggle('steps',this)">8–10к</button>
+          <button class="toggle-btn" onclick="pickToggle('steps',this)">10к+</button>
+        </div>
+        <div class="field-hint">NEAT — приоритет в первый месяц</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ──────────────────────────────────────────────────── -->
+  <!-- 4. ЖКТ -->
+  <!-- ──────────────────────────────────────────────────── -->
+  <div class="section" id="s4">
+    <div class="section-header" onclick="toggle('s4')">
+      <div class="section-num">4</div>
+      <div class="section-title">ЖКТ</div>
+      <div class="section-subtitle">стул · реакция на еду</div>
+      <div class="chevron">▼</div>
+    </div>
+    <div class="section-body">
+
+      <div class="field">
+        <div class="field-label"><span class="dot"></span>Стул сегодня</div>
+        <div class="toggle-row" id="stool">
+          <button class="toggle-btn" onclick="pickToggle('stool',this)">Норма</button>
+          <button class="toggle-btn" onclick="pickToggle('stool',this)">Запор</button>
+          <button class="toggle-btn" onclick="pickToggle('stool',this)">Диарея</button>
+          <button class="toggle-btn" onclick="pickToggle('stool',this)">Не было</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="field-label"><span class="dot"></span>Что плохо переносилось</div>
+        <div class="check-list">
+          <div class="check-item" onclick="toggleCheck(this)">
+            <div class="check-box"><span class="check-mark">✓</span></div>
+            <span class="check-text">Жирная еда</span>
+          </div>
+          <div class="check-item" onclick="toggleCheck(this)">
+            <div class="check-box"><span class="check-mark">✓</span></div>
+            <span class="check-text">Большая порция</span>
+          </div>
+          <div class="check-item" onclick="toggleCheck(this)">
+            <div class="check-box"><span class="check-mark">✓</span></div>
+            <span class="check-text">Запах еды при готовке</span>
+          </div>
+          <div class="check-item" onclick="toggleCheck(this)">
+            <div class="check-box"><span class="check-mark">✓</span></div>
+            <span class="check-text">Холодная еда</span>
+          </div>
+          <div class="check-item" onclick="toggleCheck(this)">
+            <div class="check-box"><span class="check-mark">✓</span></div>
+            <span class="check-text">Всё переносилось нормально</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ──────────────────────────────────────────────────── -->
+  <!-- 5. MOUNJARO -->
+  <!-- ──────────────────────────────────────────────────── -->
+  <div class="section" id="s5">
+    <div class="section-header" onclick="toggle('s5')">
+      <div class="section-num">5</div>
+      <div class="section-title">Mounjaro</div>
+      <div class="section-subtitle">аппетит · день после укола</div>
+      <div class="chevron">▼</div>
+    </div>
+    <div class="section-body">
+
+      <div class="field">
+        <div class="field-label"><span class="dot"></span>Аппетит сегодня</div>
+        <div class="toggle-row" id="appetite">
+          <button class="toggle-btn" onclick="pickToggle('appetite',this)">Нет совсем</button>
+          <button class="toggle-btn" onclick="pickToggle('appetite',this)">Очень низкий</button>
+          <button class="toggle-btn" onclick="pickToggle('appetite',this)">Низкий</button>
+          <button class="toggle-btn" onclick="pickToggle('appetite',this)">Нормальный</button>
+        </div>
+        <div class="field-hint">Задача — есть достаточно, а не ограничивать</div>
+      </div>
+
+      <div class="field">
+        <div class="field-label"><span class="dot"></span>День после инъекции</div>
+        <div class="field-hint">Самый тяжёлый день после укола этой недели</div>
+        <div class="inj-day-grid" id="inj-day">
+          <button class="inj-day-btn" onclick="pickInjDay(this)"><span>1</span><span class="dn">день</span></button>
+          <button class="inj-day-btn" onclick="pickInjDay(this)"><span>2</span><span class="dn">день</span></button>
+          <button class="inj-day-btn" onclick="pickInjDay(this)"><span>3</span><span class="dn">день</span></button>
+          <button class="inj-day-btn" onclick="pickInjDay(this)"><span>4</span><span class="dn">день</span></button>
+          <button class="inj-day-btn" onclick="pickInjDay(this)"><span>≥5</span><span class="dn">день</span></button>
+          <button class="inj-day-btn" onclick="pickInjDay(this)"><span>↑</span><span class="dn">лучше</span></button>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="field-label"><span class="dot"></span>Доза сегодня</div>
+        <div class="toggle-row" id="dose">
+          <button class="toggle-btn" onclick="pickToggle('dose',this)">2.5 мг</button>
+          <button class="toggle-btn" onclick="pickToggle('dose',this)">5 мг</button>
+          <button class="toggle-btn" onclick="pickToggle('dose',this)">7.5 мг</button>
+          <button class="toggle-btn" onclick="pickToggle('dose',this)">10 мг</button>
+          <button class="toggle-btn" onclick="pickToggle('dose',this)">12.5 мг</button>
+          <button class="toggle-btn" onclick="pickToggle('dose',this)">15 мг</button>
+          <button class="toggle-btn" onclick="pickToggle('dose',this)">— без укола</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ──────────────────────────────────────────────────── -->
+  <!-- 6. ЗАМЕТКИ -->
+  <!-- ──────────────────────────────────────────────────── -->
+  <div class="section" id="s6">
+    <div class="section-header" onclick="toggle('s6')">
+      <div class="section-num">6</div>
+      <div class="section-title">Заметки</div>
+      <div class="section-subtitle">всё что важно зафиксировать</div>
+      <div class="chevron">▼</div>
+    </div>
+    <div class="section-body">
+      <div class="field">
+        <div class="field-label"><span class="dot"></span>Что было хорошо</div>
+        <textarea class="diary-textarea" id="notes-good" placeholder="Например: смогла съесть весь завтрак, дошла до 9к шагов..."></textarea>
+      </div>
+      <div class="field">
+        <div class="field-label"><span class="dot"></span>Что было сложно</div>
+        <textarea class="diary-textarea" id="notes-hard" placeholder="Например: не хотелось есть после 15:00, тошнота пик в 14ч..."></textarea>
+      </div>
+      <div class="field">
+        <div class="field-label"><span class="dot"></span>Вопрос врачу / нутрициологу</div>
+        <textarea class="diary-textarea" id="notes-question" style="min-height:52px" placeholder="Что уточнить на следующей встрече?"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUBMIT -->
+  <div class="submit-row" style="margin-top:16px">
+    <button type="button" class="btn-primary" id="submitBtn" onclick="submit()">Сохранить день →</button>
+    <button type="button" class="btn-reset" onclick="resetForm()">Сброс</button>
+    <span class="submit-status" id="submitStatus" role="status" aria-live="polite"></span>
+  </div>
+
+  <!-- FEEDBACK -->
+  <div class="feedback-block" id="feedback">
+    <div class="fb-header">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>
+      <span class="fb-header-title">Разбор дня</span>
+    </div>
+    <div class="fb-body" id="fb-items"></div>
+  </div>
+
+  <div class="page-footer">
+    metaB · Индивидуальный протокол · Данные конфиденциальны
+  </div>
+
+</div>
+
+<script>
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxFPQmC8Rl_8Aj2oeMs1nPmakv7nFq_6jB2pR71iK_4cJMq4-oCrLGTnTs9dZ5TvlpHxg/exec";
+const state = {};
+
+if (!WEB_APP_URL) document.getElementById("configWarn").hidden = false;
+
+function mealProtein(slotLabel) {
+  const slots = document.querySelectorAll(".meal-slot");
+  for (const slot of slots) {
+    const lbl = slot.querySelector(".meal-slot-label");
+    if (lbl && lbl.textContent.trim() === slotLabel) {
+      const check = slot.querySelector(".meal-check");
+      return check && check.classList.contains("done") ? "Да" : "Нет";
+    }
+  }
+  return "";
+}
+
+function ynLabel(val) {
+  if (val === "yes") return "Да";
+  if (val === "no") return "Нет";
+  return "";
+}
+
+function workoutLabel(val) {
+  if (val === "yes") return "Была";
+  if (val === "no") return "Не было";
+  return "";
+}
+
+function getInjDayLabel() {
+  const sel = document.querySelector("#inj-day .inj-day-btn.sel");
+  if (!sel) return "";
+  const parts = Array.from(sel.querySelectorAll("span")).map((s) => s.textContent.trim());
+  return parts.filter(Boolean).join(" ");
+}
+
+function getFoodTolerance() {
+  return Array.from(document.querySelectorAll(".check-item.sel .check-text"))
+    .map((el) => el.textContent.trim())
+    .join("; ");
+}
+
+function isInjectionDayBySchedule(dateStr) {
+  const d = new Date(dateStr + "T12:00:00").getDay();
+  return d === 2 || d === 4 ? "Да" : "Нет";
+}
+
+function buildPayload() {
+  const entryDate = document.getElementById("diary-date").value;
+  return {
+    form_version: "metab_daily_v1",
+    participant_name: document.getElementById("participant_name").value.trim(),
+    entry_date: entryDate,
+    is_injection_day_auto: isInjectionDayBySchedule(entryDate),
+    is_day_after_injection: document.getElementById("day-after-btn").classList.contains("active") ? "Да" : "Нет",
+    energy_morning_1_5: state.energy || "",
+    mood: state.mood || "",
+    nausea_0_5: state.nausea !== undefined ? state.nausea : "",
+    heartburn: ynLabel(state.heartburn),
+    gut_comfort_after_meal: state["gut-comfort"] || "",
+    volume_eaten: state["vol-eaten"] || "",
+    water_intake: state.water || "",
+    protein_breakfast: mealProtein("Завтрак"),
+    protein_pre_workout: mealProtein("Pre-workout"),
+    protein_lunch_post: mealProtein("Обед / Post"),
+    protein_snack: mealProtein("Перекус"),
+    protein_dinner: mealProtein("Ужин"),
+    protein_total_g: document.getElementById("protein-total").value.trim(),
+    day_card: state["day-card"] || "",
+    had_workout: workoutLabel(state.workout),
+    workout_type: state["workout-type"] || "",
+    workout_quality: state["workout-quality"] || "",
+    steps: state.steps || "",
+    stool: state.stool || "",
+    food_poor_tolerance: getFoodTolerance(),
+    appetite: state.appetite || "",
+    days_after_injection: getInjDayLabel(),
+    dose_mg: state.dose || "",
+    notes_good: document.getElementById("notes-good").value.trim(),
+    notes_hard: document.getElementById("notes-hard").value.trim(),
+    question_for_doctor: document.getElementById("notes-question").value.trim(),
+  };
+}
+
+function toggle(id) {
+  const el = document.getElementById(id);
+  el.classList.toggle('open');
+}
+
+function pickScale(field, btn, cls) {
+  const parent = btn.closest('.scale');
+  parent.querySelectorAll('.scale-btn').forEach(b => {
+    b.className = 'scale-btn';
+  });
+  btn.classList.add(cls);
+  state[field] = btn.dataset.v;
+}
+
+function pickToggle(field, btn) {
+  const parent = btn.closest('.toggle-row');
+  parent.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('sel'));
+  btn.classList.add('sel');
+  state[field] = btn.textContent.trim();
+}
+
+function pickYN(field, btn, val, selClass) {
+  const parent = btn.closest('.yn-row');
+  parent.querySelectorAll('.yn-btn').forEach(b => b.className = 'yn-btn');
+  btn.classList.add(selClass);
+  state[field] = val;
+  if (field === 'workout') {
+    document.getElementById('workout-detail').style.display = val === 'yes' ? 'flex' : 'none';
+    document.getElementById('workout-feel').style.display = val === 'yes' ? 'flex' : 'none';
+  }
+}
+
+function toggleCheck(item) {
+  item.classList.toggle('sel');
+}
+
+function toggleMeal(el) {
+  el.classList.toggle('done');
+}
+
+function pickInjDay(btn) {
+  const parent = btn.closest('.inj-day-grid');
+  parent.querySelectorAll('.inj-day-btn').forEach(b => b.classList.remove('sel'));
+  btn.classList.add('sel');
+}
+
+function toggleDayAfter() {
+  const btn = document.getElementById('day-after-btn');
+  btn.classList.toggle('active');
+}
+
+async function submit() {
+  const statusEl = document.getElementById("submitStatus");
+  const submitBtn = document.getElementById("submitBtn");
+  statusEl.textContent = "";
+  statusEl.className = "submit-status";
+
+  const name = document.getElementById("participant_name").value.trim();
+  if (!name) {
+    statusEl.textContent = "Укажите имя или псевдоним.";
+    statusEl.classList.add("err");
+    document.getElementById("participant_name").focus();
+    return;
+  }
+
+  if (!WEB_APP_URL) {
+    statusEl.textContent = "Не задан WEB_APP_URL в коде страницы.";
+    statusEl.classList.add("err");
+    return;
+  }
+
+  const nausea = parseInt(state['nausea'] || 0);
+  const water = state['water'] || '';
+  const vol = state['vol-eaten'] || '';
+  const protein = parseInt(document.getElementById('protein-total').value || 0);
+  const energy = parseInt(state['energy'] || 3);
+  const steps = state['steps'] || '';
+  const appetite = state['appetite'] || '';
+
+  const items = [];
+
+  if (nausea >= 4) {
+    items.push({t:'bad', text:'Тошнота ' + nausea + '/5 — переключись на карточку V. Приоритет: V1 → L1 → S2 → D1.'});
+  } else if (nausea >= 2) {
+    items.push({t:'warn', text:'Тошнота умеренная (' + nausea + '/5) — держи порции небольшими, жир минимально до вечера.'});
+  } else {
+    items.push({t:'ok', text:'Тошнота под контролем — можно работать по плановой карточке дня.'});
+  }
+
+  if (water === '< 1 л' || water === '') {
+    items.push({t:'bad', text:'Мало воды — МК 389, гидратация критична. Цель: 2+ л завтра.'});
+  } else if (water === '1 – 1.5 л') {
+    items.push({t:'warn', text:'Вода 1–1.5 л — немного ниже нормы. Добавь стакан к каждому приёму.'});
+  } else {
+    items.push({t:'ok', text:'Гидратация в норме — хорошо для МК и общего самочувствия.'});
+  }
+
+  if (protein > 0 && protein < 80) {
+    items.push({t:'warn', text:'Белок ' + protein + 'г — ниже минимума 80г для дня тошноты. Завтра добавь изолят в перекус.'});
+  } else if (protein >= 80 && protein <= 135) {
+    items.push({t:'ok', text:'Белок ' + protein + 'г — в целевом диапазоне.'});
+  } else if (protein > 135) {
+    items.push({t:'warn', text:'Белок ' + protein + 'г — выше верхней границы. Проверь порции мяса.'});
+  }
+
+  if (vol === 'Нет, очень мало') {
+    items.push({t:'bad', text:'Объём еды очень мал. Если 2+ дня подряд — сообщи врачу.'});
+  } else if (vol === 'Частично') {
+    items.push({t:'warn', text:'Частичное питание — это нормально в дни пика. Главное — белок и вода.'});
+  }
+
+  if (steps === '10к+' || steps === '8–10к') {
+    items.push({t:'ok', text:'Отличный NEAT — это вклад в висцеральный жир без нагрузки на ЖКТ.'});
+  } else if (steps === '< 4к') {
+    items.push({t:'warn', text:'Шаги низкие — даже 10-минутная прогулка после еды улучшает чувствительность к инсулину.'});
+  }
+
+  if (appetite === 'Нет совсем') {
+    items.push({t:'bad', text:'Аппетит 0 — используй карточку V, пробуй жидкое и мягкое маленькими порциями.'});
+  }
+
+  const fb = document.getElementById('feedback');
+  const fbItems = document.getElementById('fb-items');
+  fb.classList.add('show');
+  fbItems.innerHTML = items.map(i =>
+    '<div class="fb-item ' + i.t + '">' +
+    '<span class="fb-icon">' + (i.t==='ok'?'✓':i.t==='warn'?'⚠':'✕') + '</span>' +
+    '<span class="fb-text">' + i.text + '</span></div>'
+  ).join('');
+
+  fb.scrollIntoView({behavior:'smooth', block:'start'});
+
+  submitBtn.disabled = true;
+  statusEl.textContent = "Отправка…";
+
+  try {
+    const res = await fetch(WEB_APP_URL, {
+      method: "POST",
+      mode: "cors",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(buildPayload()),
+    });
+
+    const text = await res.text();
+    let data;
+    try { data = JSON.parse(text); } catch { data = null; }
+
+    if (!res.ok) {
+      throw new Error(data && data.message ? data.message : "Код ответа: " + res.status);
+    }
+    if (data && data.status === "error") {
+      throw new Error(data.message || "Ошибка сервера");
+    }
+
+    statusEl.textContent = "Сохранено в таблицу ✓";
+    statusEl.classList.add("ok");
+  } catch (err) {
+    statusEl.textContent =
+      "Не удалось отправить в таблицу. " +
+      (err && err.message ? err.message : err);
+    statusEl.classList.add("err");
+  } finally {
+    submitBtn.disabled = false;
+  }
+}
+
+function resetForm() {
+  if (!confirm('Сбросить все поля?')) return;
+  document.querySelectorAll('.scale-btn').forEach(b => b.className = 'scale-btn');
+  document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('sel'));
+  document.querySelectorAll('.yn-btn').forEach(b => b.className = 'yn-btn');
+  document.querySelectorAll('.check-item').forEach(b => b.classList.remove('sel'));
+  document.querySelectorAll('.meal-check').forEach(b => b.classList.remove('done'));
+  document.querySelectorAll('.inj-day-btn').forEach(b => b.classList.remove('sel'));
+  document.querySelectorAll('textarea').forEach(t => t.value = '');
+  document.getElementById('protein-total').value = '';
+  document.getElementById('feedback').classList.remove('show');
+  document.getElementById('submitStatus').textContent = '';
+  document.getElementById('submitStatus').className = 'submit-status';
+  document.getElementById('day-after-btn').classList.remove('active');
+  document.getElementById('workout-detail').style.display = 'none';
+  document.getElementById('workout-feel').style.display = 'none';
+  for (const k in state) delete state[k];
+}
+
+const di = document.getElementById('diary-date');
+const today = new Date();
+di.value = today.toISOString().split('T')[0];
+const days = ['вс','пн','вт','ср','чт','пт','сб'];
+const d = today.getDay();
+const inj = (d === 2 || d === 4);
+if (inj) document.getElementById('inj-badge').style.background = '#0F6E56';
+</script>
+</body>
+</html>
